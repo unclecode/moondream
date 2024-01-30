@@ -11,7 +11,7 @@ transformers.logging.set_verbosity_error()
 
 
 class TextModel(nn.Module):
-    def __init__(self, model_path: str = "model") -> None:
+    def __init__(self, model_path: str = "model", dtype=torch.float16) -> None:
         super().__init__()
 
         self.tokenizer = Tokenizer.from_pretrained(f"{model_path}/tokenizer")
@@ -20,11 +20,17 @@ class TextModel(nn.Module):
         with init_empty_weights():
             self.model = PhiForCausalLM(phi_config)
 
+        # self.model = load_checkpoint_and_dispatch(
+        #     self.model,
+        #     f"{model_path}/text_model.pt",
+        #     device_map={"": "cpu"},
+        # )
         self.model = load_checkpoint_and_dispatch(
             self.model,
             f"{model_path}/text_model.pt",
-            device_map={"": "cpu"},
-        )
+            device_map={"": self.device.type},
+            dtype=dtype
+        )        
         self.text_emb = self.model.get_input_embeddings()
 
     def input_embeds(self, prompt, image_embeds):
