@@ -11,8 +11,11 @@ transformers.logging.set_verbosity_error()
 
 
 class TextModel(nn.Module):
-    def __init__(self, model_path: str = "model", dtype=torch.float16) -> None:
+    def __init__(self, model_path: str = "model", device: str = "cpu", dtype=torch.float16) -> None:
         super().__init__()
+
+        self.device = torch.device(device)
+        self.dtype = dtype
 
         self.tokenizer = Tokenizer.from_pretrained(f"{model_path}/tokenizer")
         phi_config = PhiConfig.from_pretrained(f"{model_path}/text_model_cfg.json")
