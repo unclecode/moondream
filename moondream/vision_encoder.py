@@ -13,7 +13,7 @@ from torchvision.transforms.v2 import (
 
 
 class VisionEncoder(nn.Module):
-    def __init__(self, model_path: str = "model") -> None:
+    def __init__(self, model_path: str = "model", dtype=torch.float16) -> None:
         super().__init__()
 
         self.model = torch.jit.load(f"{model_path}/vision.pt")
@@ -21,7 +21,7 @@ class VisionEncoder(nn.Module):
             [
                 Resize(size=(378, 378), interpolation=InterpolationMode.BICUBIC),
                 ToImage(),
-                ToDtype(torch.float32, scale=True),
+                ToDtype(dtype, scale=True),
                 Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
             ]
         )
